@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace ModelLayer.Entities
 {
@@ -27,7 +28,8 @@ namespace ModelLayer.Entities
         public string IsColour {  get; set; }
 
         [ForeignKey("User")]
-        public string EmailId { get; set; }
+        [JsonIgnore]
+        public string? EmailId { get; set; }
 
 
     }

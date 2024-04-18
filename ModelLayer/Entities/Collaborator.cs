@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace ModelLayer.Entities
 {
@@ -17,6 +18,8 @@ namespace ModelLayer.Entities
         public int NoteId { get; set; } 
 
         [ForeignKey("User")]
-        public string CollaboratorEmail { get; set; } 
+        public string CollaboratorEmail { get; set; }
+        [JsonIgnore]
+        public string? OwnerEmail { get; set; }
     }
 }

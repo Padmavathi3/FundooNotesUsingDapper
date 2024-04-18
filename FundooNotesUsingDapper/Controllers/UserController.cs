@@ -112,9 +112,11 @@ namespace FundooNotesUsingDapper.Controllers
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------
-        [HttpGet("GetbyEmail/{email}")]
-        public async Task<IActionResult> GetUsersByEmail(string email)
+        [HttpGet("GetbyEmail")]
+        [Authorize]
+        public async Task<IActionResult> GetUsersByEmail()
         {
+            var email=User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 var users = await userdl.GetUsersByEmail(email);
@@ -155,9 +157,11 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //-------------------------------------------------------------------------------------------------------------------------------------------------
-        [HttpDelete("DeleteUser/{email}")]
-        public async Task<IActionResult> DeleteUserByEmail(string email)
+        [HttpDelete("DeleteUser")]
+        [Authorize]
+        public async Task<IActionResult> DeleteUserByEmail()
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await userdl.DeleteUserByEmail(email);
