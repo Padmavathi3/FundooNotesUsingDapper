@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Entities;
 using ModelLayer;
 using RepositoryLayer.CustomExceptions;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FundooNotesUsingDapper.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CollaboratorController : ControllerBase
     {
         private readonly ICollaboratorBl collaboratorbl;
@@ -21,6 +24,7 @@ namespace FundooNotesUsingDapper.Controllers
         [HttpPost("AddCollaborator")]
         public async Task<IActionResult> AddCollaborator(Collaborator addcollab)
         {
+            addcollab.OwnerEmail = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int result = await collaboratorbl.AddCollaborator(addcollab);
@@ -93,12 +97,13 @@ namespace FundooNotesUsingDapper.Controllers
         }
         //-----------------------------------------------------------------------------------------------------------------------------------
 
-        [HttpGet("GetAllCollaboratorsById/{nid}")]
-        public async Task<IActionResult> GetAllCollaborators(int nid)
+        [HttpGet("GetAllCollaboratorsByEmail")]
+        public async Task<IActionResult> GetAllCollaborators()
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
-                var collaborators = await collaboratorbl.GetAllCollaborators(nid);
+                var collaborators = await collaboratorbl.GetAllCollaborators(email);
 
                 if (collaborators != null)
                 {

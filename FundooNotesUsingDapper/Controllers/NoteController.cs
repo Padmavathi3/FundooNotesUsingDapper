@@ -1,10 +1,12 @@
 ﻿using BusinessLayer.InterfaceBl;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer;
 using ModelLayer.Entities;
 using RepositoryLayer.CustomExceptions;
 using RepositoryLayer.Services;
+using System.Security.Claims;
 
 namespace FundooNotesUsingDapper.Controllers
 {
@@ -20,8 +22,12 @@ namespace FundooNotesUsingDapper.Controllers
         }
 
         [HttpPost("AddNote")]
+        [Authorize]
         public async Task<IActionResult> CreateNote(Note updateDto1)
+
         {
+
+            updateDto1.EmailId = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.CreateNote(updateDto1);
@@ -56,12 +62,14 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //-------------------------------------------------------------------------------------------------------------------------------------
-        [HttpGet("GetNote/{id}")]
-        public async Task<IActionResult> GetNotesById(int id)
+        [HttpGet("GetNoteByEmail")]
+        [Authorize]
+        public async Task<IActionResult> GetNotesByEmail()
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
-                var notes = await notebl.GetNotesById(id);
+                var notes = await notebl.GetNotesByEmail(email);
 
                 if (notes.Any())
                 {
@@ -100,8 +108,10 @@ namespace FundooNotesUsingDapper.Controllers
         }
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
         [HttpPut("UpdateNote/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateNote(int id, Note re_var)
         {
+            re_var.EmailId= User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.UpdateNote(id, re_var);
@@ -136,10 +146,10 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //-----------------------------------------------------------------------------------------------------------------------------
-        [HttpDelete]
-        [Route("DeleteNote/{id}/{email}")]
-        public async Task<IActionResult> DeleteNote(int id, string email)
+        [HttpDelete("DeleteNote/{id}")]
+        public async Task<IActionResult> DeleteNote(int id)
         {
+            var email=User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.DeleteNote(id, email);
@@ -174,9 +184,11 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //----------------------------------------------------------------------------------------------------------------------------------------------
-        [HttpPost("ArchiveNote")]
-        public async Task<IActionResult> ArchiveNote(int id, string email)
+        [HttpPost("ArchiveNote/{id}")]
+        [Authorize]
+        public async Task<IActionResult> ArchiveNote(int id)
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.ArchiveNote(id, email);
@@ -214,9 +226,11 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //-----------------------------------------------------------------------------------------------------------------------------------
-        [HttpPost("PinnNote")]
-        public async Task<IActionResult> PinnNote(int id, string email)
+        [HttpPost("PinnNote/{id}")]
+        [Authorize]
+        public async Task<IActionResult> PinnNote(int id)
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.PinnNote(id, email);
@@ -254,9 +268,11 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //---------------------------------------------------------------------------------------------------------------------------------
-        [HttpPost("TrashNote")]
-        public async Task<IActionResult> TrashNote(int id, string email)
+        [HttpPost("TrashNote/{id}")]
+        [Authorize]
+        public async Task<IActionResult> TrashNote(int id)
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
             try
             {
                 int rowsAffected = await notebl.TrashNote(id, email);
