@@ -15,6 +15,9 @@ namespace FundooNotesUsingDapper.Controllers
     [Authorize]
     public class LabelController : ControllerBase
     {
+
+
+
         private readonly ILabelBl labelbl;
         private readonly ILogger<LabelController> logger;
         public LabelController(ILabelBl labelbl, ILogger<LabelController> logger)
