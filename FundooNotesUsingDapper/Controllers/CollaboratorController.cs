@@ -15,9 +15,11 @@ namespace FundooNotesUsingDapper.Controllers
     public class CollaboratorController : ControllerBase
     {
         private readonly ICollaboratorBl collaboratorbl;
-        public CollaboratorController(ICollaboratorBl collaboratorbl)
+        private readonly ILogger<CollaboratorController> logger;    
+        public CollaboratorController(ICollaboratorBl collaboratorbl, ILogger<CollaboratorController> logger)
         {
             this.collaboratorbl = collaboratorbl;
+            this.logger = logger;
         }
 
         //----------------------------------------------------------------------------------------------
@@ -31,6 +33,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (result == 1)
                 {
+                    logger.LogInformation("Collaborator added successfully");
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,
@@ -68,6 +71,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (result > 0)
                 {
+                    logger.LogInformation($"Deleted collaborator: {cid}");  
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,
@@ -107,6 +111,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (collaborators != null)
                 {
+                    logger.LogInformation($"all collaborators are retrieved for this {email}");
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,

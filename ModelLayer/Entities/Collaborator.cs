@@ -11,8 +11,7 @@ namespace ModelLayer.Entities
 {
     public class Collaborator
     {
-        [Key]
-        public int CollaboratorId { get; set; } 
+        
 
         [ForeignKey("UserNote")]
         public int NoteId { get; set; } 

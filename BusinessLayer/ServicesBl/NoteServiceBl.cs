@@ -3,6 +3,7 @@ using ModelLayer.Entities;
 using RepositoryLayer.Interface;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,10 @@ namespace BusinessLayer.ServicesBl
         {
             return note.GetNotesByEmail(email);
         }
+        public Task<IEnumerable<Note>> GetAllNotes()
+        {
+            return note.GetAllNotes();
+        }
 
         public Task<int> UpdateNote(int id, Note re_var)
         {
@@ -49,6 +54,11 @@ namespace BusinessLayer.ServicesBl
         public Task<int> TrashNote(int id, string email)
         {
             return note.TrashNote(id, email);
+        }
+
+        public Task<int> UpdateColour(int id, string colour)
+        {
+            return note.UpdateColour(id, colour);   
         }
 
 

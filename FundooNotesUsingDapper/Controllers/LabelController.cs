@@ -16,10 +16,11 @@ namespace FundooNotesUsingDapper.Controllers
     public class LabelController : ControllerBase
     {
         private readonly ILabelBl labelbl;
-
-        public LabelController(ILabelBl labelbl)
+        private readonly ILogger<LabelController> logger;
+        public LabelController(ILabelBl labelbl, ILogger<LabelController> logger)
         {
             this.labelbl = labelbl;
+            this.logger = logger;
         }
 
         //----------------------------------------------------------------------------------------------
@@ -33,6 +34,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (result == 1)
                 {
+                    logger.LogInformation("label is added");
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,

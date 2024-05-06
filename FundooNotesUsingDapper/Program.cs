@@ -1,8 +1,10 @@
 using BusinessLayer.InterfaceBl;
 using BusinessLayer.ServicesBl;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog.Web;
 using RepositoryLayer.Context;
 using RepositoryLayer.Interface;
 using RepositoryLayer.Services;
@@ -22,8 +24,29 @@ builder.Services.AddScoped<INoteBl, NoteServiceBl>();
 builder.Services.AddScoped<ICollaborator, CollaboratorService>();
 builder.Services.AddScoped<ICollaboratorBl, CollaboratorServiceBl>();
 builder.Services.AddScoped<ILabel, LabelService>();
-builder.Services.AddScoped<ILabelBl,LabelServiceBl>();  
+builder.Services.AddScoped<ILabelBl,LabelServiceBl>();
+//------------------------------------------------------------------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+var logpath = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+NLog.GlobalDiagnosticsContext.Set("LogDirectory", logpath);
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+object value = builder.Host.UseNLog();
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200", "https://localhost:7231")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowAnyOrigin();
+        });
+});
+//---------------------------------------------------------------------------------------------------------------------------------------
 
 
 builder.Services.AddControllers();
@@ -93,6 +116,17 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = key
     };
+});*/
+var app = builder.Build();
+
+});
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+var app = builder.Build();
+app.UseCors("AllowSpecificOrigin");
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 });
 var app = builder.Build();
 
@@ -102,6 +136,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 
