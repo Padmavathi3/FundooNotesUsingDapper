@@ -47,13 +47,13 @@ namespace RepositoryLayer.Services
         //---------------------------------------------------------------------------------------------------------------------------------------------------
         //logic for Display the all notes
 
-        public async Task<IEnumerable<Note>> GetNotesById(int id)
+        public async Task<IEnumerable<Note>> GetNotesByEmail(string email)
         {
-            var query = "SELECT * FROM USerNote where NoteId=@NoteId";
+            var query = "SELECT * FROM USerNote where EmailId=@EmailId";
 
             using (var connection = _context.CreateConnection())
             {
-                var notes = await connection.QueryAsync<Note>(query, new{ NoteId=id});
+                var notes = await connection.QueryAsync<Note>(query, new{ EmailId=email});
 
                 if (notes.Any())
                 {

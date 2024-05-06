@@ -22,11 +22,8 @@ namespace RepositoryLayer.Services
         public async Task<int> AddCollaborator(Collaborator re_var)
         { 
             var checkEmailQuery = "SELECT COUNT(*) FROM Person WHERE EmailId = @EmailId";
-<<<<<<< Updated upstream
-            var insertCollaboratorQuery = "INSERT INTO Collaborators (CollaboratorId, NoteId, CollaboratorEmail) VALUES (@CollaboratorId, @NoteId, @CollaboratorEmail)";
-=======
-            var insertCollaboratorQuery = "INSERT INTO Collaborators (NoteId, CollaboratorEmail,OwnerEmail) VALUES (@NoteId, @CollaboratorEmail,@OwnerEmail)";
->>>>>>> Stashed changes
+
+            var insertCollaboratorQuery = "INSERT INTO Collaborators (CollaboratorId, NoteId, CollaboratorEmail,OwnerEmail) VALUES (@CollaboratorId, @NoteId, @CollaboratorEmail,@OwnerEmail)";
 
             using (var connection = _context.CreateConnection())
             {
@@ -43,6 +40,7 @@ namespace RepositoryLayer.Services
                    
                     parameters.Add("@NoteId", re_var.NoteId, DbType.Int32);
                     parameters.Add("@CollaboratorEmail", re_var.CollaboratorEmail, DbType.String);
+                    parameters.Add("@OwnerEmail", re_var.OwnerEmail, DbType.String);
 
                     await connection.ExecuteAsync(insertCollaboratorQuery, parameters);
                     return 1;
@@ -86,13 +84,13 @@ namespace RepositoryLayer.Services
             }
         }
         //-------------------------------------------------------------------------------------------------------------------------------
-        public async Task<IEnumerable<Collaborator>> GetAllCollaborators(int nid)
+        public async Task<IEnumerable<Collaborator>> GetAllCollaborators(string email)
         {
-            var query = "SELECT * FROM collaborators where NoteId=@NoteId";
+            var query = "SELECT * FROM collaborators where OwnerEmail=@OwnerEmail";
 
             using (var connection = _context.CreateConnection())
             {
-                var collaborators = await connection.QueryAsync<Collaborator>(query, new { NoteId = nid });
+                var collaborators = await connection.QueryAsync<Collaborator>(query, new { OwnerEmail = email });
 
                 if (collaborators.Any())
                 {
@@ -100,7 +98,7 @@ namespace RepositoryLayer.Services
                 }
                 else
                 {
-                    throw new EmptyListException($"Collaborator is not present with this {nid}.");
+                    throw new EmptyListException($"Collaborator is not present with this {email}.");
                 }
             }
         }

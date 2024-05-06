@@ -26,9 +26,9 @@ namespace BusinessLayer.ServicesBl
             return collab.DeleteCollaborator(cid, nid);
         }
 
-        public Task<IEnumerable<Collaborator>> GetAllCollaborators(int nid)
+        public Task<IEnumerable<Collaborator>> GetAllCollaborators(string email)
         {
-            return collab.GetAllCollaborators(nid);
+            return collab.GetAllCollaborators(email);
         }
     }
 }

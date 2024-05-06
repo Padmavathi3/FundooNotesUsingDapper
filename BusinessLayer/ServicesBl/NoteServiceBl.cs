@@ -30,9 +30,9 @@ namespace BusinessLayer.ServicesBl
             return note.DeleteNote(id, email);  
         }
 
-        public Task<IEnumerable<Note>> GetNotesById(int id)
+        public Task<IEnumerable<Note>> GetNotesByEmail(string email)
         {
-            return note.GetNotesById(id);
+            return note.GetNotesByEmail(email);
         }
         public Task<IEnumerable<Note>> GetAllNotes()
         {

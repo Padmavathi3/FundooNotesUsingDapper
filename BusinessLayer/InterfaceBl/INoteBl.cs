@@ -10,13 +10,11 @@ namespace BusinessLayer.InterfaceBl
     public interface INoteBl
     {
         public Task<int> CreateNote(Note re_var);
-<<<<<<< Updated upstream
 
         public Task<IEnumerable<Note>> GetNotesById(int id);
-=======
         public Task<IEnumerable<Note>> GetAllNotes();
         public Task<IEnumerable<Note>> GetNotesByEmail(string email);
->>>>>>> Stashed changes
+
         public Task<int> UpdateNote(int id, Note re_var);
         public Task<int> DeleteNote(int id, string email);
         public Task<int> ArchiveNote(int id, string email);
