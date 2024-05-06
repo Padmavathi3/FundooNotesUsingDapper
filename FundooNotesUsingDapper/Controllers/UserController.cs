@@ -1,5 +1,7 @@
 ﻿using BusinessLayer.InterfaceBl;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +20,17 @@ namespace FundooNotesUsingDapper.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class UserController : ControllerBase
     {
         private readonly IUserBl userdl;
         private readonly IConfiguration configuration;
-        public UserController(IUserBl userdl, IConfiguration configuration)
+        private readonly ILogger<UserController> logger;
+        public UserController(IUserBl userdl, IConfiguration configuration, ILogger<UserController> logger)
         {
             this.userdl = userdl;
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         //---------------------------------------------------------------------------------------------------------
@@ -38,8 +43,10 @@ namespace FundooNotesUsingDapper.Controllers
                 // Inserting user details into the database
                 int rowsAffected = await userdl.Insertion(updateDto.FirstName, updateDto.LastName, updateDto.EmailId, updateDto.Password);
 
+               
                 if (rowsAffected > 0)
                 {
+                    logger.LogInformation("user registered successfully");
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,
@@ -67,6 +74,8 @@ namespace FundooNotesUsingDapper.Controllers
                 });
             }
         }
+
+
         //---------------------------------------------------------------------------------------------------------------------------------------------
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetUsersList()
@@ -77,6 +86,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (users.Any())
                 {
+                    logger.LogInformation("users are retrived successfully");
                     var response = new ResponseModel<IEnumerable<User>>
                     {
                         Success = true,
@@ -164,6 +174,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (rowsAffected > 0)
                 {
+                    logger.LogInformation("user deleted successfulyy");
                     var responseModel = new ResponseModel<object>
                     {
                         Success = true,
@@ -284,7 +295,7 @@ namespace FundooNotesUsingDapper.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddHours(1);
+            var expires = DateTime.UtcNow.AddDays(7);
             var claims = new List<Claim>
             {
                  new Claim(ClaimTypes.Email, email),

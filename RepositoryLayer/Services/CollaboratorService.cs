@@ -22,7 +22,11 @@ namespace RepositoryLayer.Services
         public async Task<int> AddCollaborator(Collaborator re_var)
         { 
             var checkEmailQuery = "SELECT COUNT(*) FROM Person WHERE EmailId = @EmailId";
+<<<<<<< Updated upstream
             var insertCollaboratorQuery = "INSERT INTO Collaborators (CollaboratorId, NoteId, CollaboratorEmail) VALUES (@CollaboratorId, @NoteId, @CollaboratorEmail)";
+=======
+            var insertCollaboratorQuery = "INSERT INTO Collaborators (NoteId, CollaboratorEmail,OwnerEmail) VALUES (@NoteId, @CollaboratorEmail,@OwnerEmail)";
+>>>>>>> Stashed changes
 
             using (var connection = _context.CreateConnection())
             {
@@ -36,7 +40,7 @@ namespace RepositoryLayer.Services
                 {
                     // Add collaborator
                     var parameters = new DynamicParameters();
-                    parameters.Add("@CollaboratorId", re_var.CollaboratorId, DbType.Int32);
+                   
                     parameters.Add("@NoteId", re_var.NoteId, DbType.Int32);
                     parameters.Add("@CollaboratorEmail", re_var.CollaboratorEmail, DbType.String);
 

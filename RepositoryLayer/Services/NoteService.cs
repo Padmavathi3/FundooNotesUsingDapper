@@ -25,11 +25,11 @@ namespace RepositoryLayer.Services
         //Logic for inserting records
         public async Task<int> CreateNote(Note re_var)
         {
-            var query = "INSERT INTO UserNote (NoteId, Title, Description, reminder, isArchive, isPinned, isTrash, EmailId,IsColour) " +
-                        "VALUES (@NoteId, @Title, @Description, @Reminder, @IsArchive, @IsPinned, @IsTrash, @EmailId,@IsColour)";
+            var query = "INSERT INTO UserNote (Title, Description, reminder, isArchive, isPinned, isTrash, EmailId,IsColour) " +
+                        "VALUES (@Title, @Description, @Reminder, @IsArchive, @IsPinned, @IsTrash, @EmailId,@IsColour)";
 
             var parameters = new DynamicParameters();
-            parameters.Add("@NoteId", re_var.NoteId, DbType.String);
+           
             parameters.Add("@Title", re_var.Title, DbType.String);
             parameters.Add("@Description", re_var.Description, DbType.String);
             parameters.Add("@Reminder", re_var.Reminder, DbType.DateTime);
@@ -66,8 +66,27 @@ namespace RepositoryLayer.Services
             }
         }
 
-        //==================================================================================================================================================================        
-            public async Task<int> UpdateNote(int id, Note re_var)
+        //==================================================================================================================================================================
+        public async Task<IEnumerable<Note>> GetAllNotes()
+        {
+            var query = "SELECT * FROM UserNote";
+
+            using (var connection = _context.CreateConnection())
+            {
+                var notes = await connection.QueryAsync<Note>(query);
+
+                if (notes.Any())
+                {
+                    return notes;
+                }
+                else
+                {
+                    throw new EmptyListException("Notes are not present");
+                }
+            }
+        }
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public async Task<int> UpdateNote(int id, Note re_var)
             {
                 var query = @"UPDATE UserNote SET 
                   Title = @Title, 
@@ -202,6 +221,23 @@ namespace RepositoryLayer.Services
                 }
 
                 return rowsAffected;
+            }
+        }
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        public async Task<int> UpdateColour(int id, string colour)
+        {
+            var query = @"UPDATE UserNote SET
+                  IsColour = @IsColour
+                  WHERE NoteId = @NoteId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@IsColour", colour, DbType.String);
+            parameters.Add("@NoteId", id, DbType.Int32);
+
+            using (var connection = _context.CreateConnection())
+            {
+                return await connection.ExecuteAsync(query, parameters);
             }
         }
 

@@ -13,10 +13,11 @@ namespace FundooNotesUsingDapper.Controllers
     public class NoteController : ControllerBase
     {
         private readonly INoteBl notebl;
-       
-        public NoteController(INoteBl notebl)
+        private readonly ILogger<NoteController> logger;    
+        public NoteController(INoteBl notebl, ILogger<NoteController> logger)
         {
             this.notebl = notebl;
+            this.logger = logger;
         }
 
         [HttpPost("AddNote")]
@@ -28,6 +29,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (rowsAffected > 0)
                 {
+                    logger.LogInformation("Notes created successfully");
                     return Ok(new ResponseModel<object>
                     {
                         Success = true,
@@ -65,6 +67,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (notes.Any())
                 {
+                    logger.LogInformation("notes are retrived for particular user based on email");
                     var response = new ResponseModel<IEnumerable<Note>> // Assuming the type here is Note
                     {
                         Success = true,
@@ -99,6 +102,51 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        [HttpGet("GetAllNotes")]
+        [Authorize]
+        public async Task<IActionResult> GetAllNotes()
+        {
+            try
+            {
+                var notes = await notebl.GetAllNotes();
+
+                if (notes.Any())
+                {
+                    logger.LogInformation("noted are retrieved successfully");
+                    var response = new ResponseModel<IEnumerable<Note>> // Assuming the type here is Note
+                    {
+                        Success = true,
+                        Message = "Notes retrieved successfully",
+                        Data = notes
+                    };
+
+                    return Ok(response);
+                }
+                else
+                {
+                    var response = new ResponseModel<IEnumerable<Note>> // Assuming the type here is Note
+                    {
+                        Success = false,
+                        Message = "Notes list is empty",
+                        Data = null
+                    };
+
+                    return NotFound(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                var response = new ResponseModel<IEnumerable<Note>> // Assuming the type here is Note
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                };
+
+                return BadRequest(response); // Changed to BadRequest since it's an exception in processing the request
+            }
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------
         [HttpPut("UpdateNote/{id}")]
         public async Task<IActionResult> UpdateNote(int id, Note re_var)
         {
@@ -174,8 +222,14 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //----------------------------------------------------------------------------------------------------------------------------------------------
+<<<<<<< Updated upstream
         [HttpPost("ArchiveNote")]
         public async Task<IActionResult> ArchiveNote(int id, string email)
+=======
+        [HttpPatch("ArchiveNote/{id}")]
+        [Authorize]
+        public async Task<IActionResult> ArchiveNote(int id)
+>>>>>>> Stashed changes
         {
             try
             {
@@ -183,6 +237,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (rowsAffected > 0)
                 {
+                    logger.LogInformation("note is archieved");
                     var responseModel = new ResponseModel<object>
                     {
                         Success = true,
@@ -223,6 +278,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (rowsAffected > 0)
                 {
+                    
                     var responseModel = new ResponseModel<object>
                     {
                         Success = true,
@@ -254,8 +310,14 @@ namespace FundooNotesUsingDapper.Controllers
             }
         }
         //---------------------------------------------------------------------------------------------------------------------------------
+<<<<<<< Updated upstream
         [HttpPost("TrashNote")]
         public async Task<IActionResult> TrashNote(int id, string email)
+=======
+        [HttpPatch("TrashNote/{id}")]
+        [Authorize]
+        public async Task<IActionResult> TrashNote(int id)
+>>>>>>> Stashed changes
         {
             try
             {
@@ -263,6 +325,7 @@ namespace FundooNotesUsingDapper.Controllers
 
                 if (rowsAffected > 0)
                 {
+                    logger.LogInformation("note is trasched");
                     var responseModel = new ResponseModel<object>
                     {
                         Success = true,
@@ -291,6 +354,46 @@ namespace FundooNotesUsingDapper.Controllers
 
                 };
                 return Ok(responseModel);
+            }
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        [HttpPut("UpdateColour/{id}/{updatedColour}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateColour(int id, string updatedColour)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            try
+            {
+                int rowsAffected = await notebl.UpdateColour(id, updatedColour);
+
+                if (rowsAffected > 0)
+                {
+                    logger.LogInformation("note is colour is updated");
+                    return Ok(new ResponseModel<object>
+                    {
+                        Success = true,
+                        Message = "colour updated successfully",
+                        Data = null
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel<object>
+                    {
+                        Success = false,
+                        Message = "Failed to update colour",
+                        Data = null
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel<object>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                });
             }
         }
     }
